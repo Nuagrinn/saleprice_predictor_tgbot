@@ -1,6 +1,6 @@
 version: "3"
 
 services:
-  tg_bot:
-    build: tg_bot/
-    restart: always
+    tgbot_predictor:
+      build: tg_bot/
+      restart: always
