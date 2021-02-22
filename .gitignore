@@ -4,5 +4,3 @@ __pycache__/
 .ipynb_checkpoints
 .venv
 .vscode
-j-note
-map_request_parser
