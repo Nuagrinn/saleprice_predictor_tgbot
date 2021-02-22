@@ -1,0 +1,8 @@
+__pycache__/
+.env
+.idea
+.ipynb_checkpoints
+.venv
+.vscode
+j-note
+map_request_parser
