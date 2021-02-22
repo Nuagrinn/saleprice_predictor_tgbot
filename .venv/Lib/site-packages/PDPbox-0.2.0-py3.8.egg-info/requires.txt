@@ -1,0 +1,7 @@
+pandas
+numpy
+scipy
+matplotlib>=2.1.2
+joblib
+psutil
+scikit-learn
