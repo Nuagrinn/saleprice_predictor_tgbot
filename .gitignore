@@ -1,4 +1,4 @@
-.env
 .idea
 .ipynb_checkpoints
 .vscode
+/tg_bot/.env
