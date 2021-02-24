@@ -55,7 +55,7 @@ def make_one_prediction(data):
         point_norm_pred = point_norm_pred[0]
         deviation = (point_norm_pred * 16) / 100
         result = f'Рассчитанная цена: {point_norm_pred} с отклонением +- ' \
-                 f'{deviation}. Учтите, что меньше цена (около 10 млн.), тем точнее расчет. ' \
+                 f'{deviation}. Учтите, что чем меньше цена (около 10 млн.), тем точнее расчет. ' \
                  f'Если цена кваритры пеерваливает за 20 млн. , то стоит больше учитывать ' \
                  f'отклонение при установке конечной цены.'
     except ValueError:
