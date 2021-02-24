@@ -3,6 +3,7 @@
 .venv
 .vscode
 /tg_bot/.env
+/tg_bot/__pycache__/
 __pycache__/
 j-note/.ipynb_checkpoints
 map_request_parser/AllPagesParser.py
