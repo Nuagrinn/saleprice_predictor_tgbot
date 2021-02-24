@@ -53,11 +53,12 @@ def make_one_prediction(data):
         point_prediction = XGB_best_reg.predict(transformed_df)
         point_norm_pred = np.floor(np.expm1(point_prediction))
         point_norm_pred = point_norm_pred[0]
+        deviation = (point_norm_pred * 16) / 100
+        result = f'Рассчитанная цена: {point_norm_pred} с отклонением +- ' \
+                 f'{deviation}. Учтите, что меньше цена (около 10 млн.), тем точнее расчет. ' \
+                 f'Если цена кваритры пеерваливает за 20 млн. , то стоит больше учитывать ' \
+                 f'отклонение при установке конечной цены.'
     except ValueError:
-        point_norm_pred = '"Ошибка. Какие-то данные были введены некорректно"'
+        result = '"Ошибка. Какие-то данные были введены некорректно"'
 
-    return point_norm_pred
-
-
-
-
+    return result

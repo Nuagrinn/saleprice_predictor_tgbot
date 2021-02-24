@@ -3,10 +3,13 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command, ContentTypeFilter
 import buttons as btn
 import logging
-from app import dp
+from app import dp, bot
 from states import Test
 from ml_functions import make_one_prediction
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 @dp.callback_query_handler(text='cancel')
 async def cancel_answer(call: CallbackQuery):
@@ -17,13 +20,46 @@ async def cancel_answer(call: CallbackQuery):
 @dp.message_handler(Command('start'), state=None)
 async def show_items(message: Message):
     logging.info(f'Bot started')
-    await message.answer(text='Привет! Этот бот поможет вам рассчитать цену на вторичную квартиру в Москве. \n'
+    await message.answer(text='Привет! Этот бот поможет вам рассчитать цену на вторичную квартиру в Москве. '
                               'Но для этого он должен знать некоторые ее характеристики. '
-                              'Вам нужно будет ответить на 8 вопросов. Данные деперсонализованны '
+                              'Вам нужно будет ответить на 8 вопросов. Данные деперсонализованы '
                               'и удаляются сразу после выдачи результатов. \n'
-                              'Важно: точность расчетов сильно завит от того, насколько корректно вы введете данные. \n'
+                              'Важно: точность расчета сильно завит от того, насколько корректно вы введете данные. \n'
                               'Если вы готовы, мы можем начать',
                          reply_markup=btn.start_choice)
+    await bot.send_message(chat_id=os.getenv("admin_id"), text=f'Пользователь c id '
+                                                               f'{message.from_user.id} запустил бота')
+
+
+@dp.message_handler(Command('help'), state=None)
+async def show_help(message: Message):
+    logging.info(f'Get help')
+    await message.answer(text='Чтобы запустить бота, введите команду /start. \n'
+                              'Информация для интересующихся: /info \n'
+                              'Пока бот работает в тестовым режиме и возможны ошибки. О них можете '
+                              'сообщить мне в личку @Nuagrinn. Бот будет ожидать продолжения работы '
+                              'на том месте, где вы закончите. Если вы не пройдете опрос до конца, то его нужно будет '
+                              'закончить, либо принудительно остановить работу бота.')
+
+
+@dp.message_handler(Command('info'), state=None)
+async def show_info(message: Message):
+    logging.info(f'Get help')
+    await message.answer(text='В основе работы этого бота лежит алгоритм машинного обучения XGBoost-Regressor. '
+                              'Он строится на основе ансамблевого метода: множество '
+                              'простых моделей линейной регрессии пытаются спрогнозировать цены на квартиры. Затем '
+                              'результаты '
+                              'рассчетов всех моделей объединяются, учитываются ошибки каждой из них и мы получаем '
+                              'один из '
+                              'самых мощных алгоритмов для решения задач регрессии. Для обучения модели было выгружено '
+                              '44 тыс. объявлений c ЦИАН. Важную роль в обучении сыграли координаты '
+                              'квартир. Через них алгоритм рассчитывает расстояние от центра города. '
+                              'Координаты выгружены с ЦИАН, но чтобы получить новые, '
+                              'отправляется запрос на google maps. В ответ алгоритм получает координаты адреса, '
+                              'введенного пользователем.\n'
+                              'Исходник: https://github.com/Nuagrinn/saleprice_predictor_tgbot \n'
+                              'Про градиентный бустинг: '
+                              'https://neurohive.io/ru/osnovy-data-science/gradientyj-busting/')
 
 
 @dp.callback_query_handler(btn.start_callback.filter(choice_status='yes'), state=None)
@@ -232,11 +268,11 @@ async def answer_q8(message: Message, state: FSMContext):
         data['flooramnt'] = answer
 
     data = await state.get_data()
-    predicted_price = make_one_prediction(data)
-    await message.answer(f'Вот что мы получили: {predicted_price} '
+    result = make_one_prediction(data)
+    await message.answer(f'{result} \n'
                          f'Попробуем еще раз или закончим?',
                          reply_markup=btn.start_choice)
-    logging.info(f'flooramnt:{answer} and prediction {predicted_price}.')
+    logging.info(f'flooramnt:{answer} and prediction {result}.')
 
     await state.finish()
 
@@ -246,5 +282,5 @@ async def answer_error(message: Message):
     answer = message.text
     logging.info(f"user message: {answer}")
 
-    await message.answer('Данные введены некорректно, либо бот не понимает вашего сообшения. '
-                         'Попробуйте еще раз.')
+    await message.answer('Данные введены некорректно или бот не понимает вашего сообшения. '
+                         'Попробуйте еще раз, либо введите /help.')

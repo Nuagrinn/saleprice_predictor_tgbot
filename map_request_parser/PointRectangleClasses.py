@@ -30,7 +30,7 @@ class Point:
         self.__long = value
 
 
-# steplength 0.009-lat 0.019-long for onestep squares
+# steplength 0.0045, 0.0095 for onestep squares
 # 0.36, 0.57 for general_rectangle for all Moscow
 #  Point(55.5550383110236, 37.32541797666712) for general_rectangle
 

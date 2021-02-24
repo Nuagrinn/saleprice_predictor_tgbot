@@ -8,12 +8,12 @@ import lxml
 from datetime import datetime
 from async_map_request import parse_coords_and_ids
 
-# Кустарная функция, чтобы гасить RunTimeError от aiohttp на Windows
+# function for catching RunTimeError from aiohttp on Windows
 from crutch import crutch
 
 crutch()
 
-# Создаем csv-файл и добавляем названия столбцов
+# Сreate csv file and add column names
 with open('cian_data.csv', 'w', newline='', encoding='utf-8') as file:
     a_pen = csv.writer(file)
     a_pen.writerow(('AnnouncementID', 'Title', 'Address', 'Lat', 'Long', 'MetroStations', 'TimeToMetro', 'TotalArea',
@@ -24,8 +24,7 @@ with open('cian_data.csv', 'w', newline='', encoding='utf-8') as file:
                     'FloorType', 'Entrances', 'Elevators', 'Heating', 'Emergency', 'Parking', 'GarbageChute'))
 
 
-# Функция для записи полученных данных в таблицу
-def file_writer(data_list):
+def write_to_file(data_list):
     with open('cian_data.csv', 'a', newline='', encoding='utf-8') as file:
         a_pen = csv.writer(file)
         for item in data_list:
@@ -38,8 +37,7 @@ def file_writer(data_list):
                  item['Parking'], item['GarbageChute']))
 
 
-# Асинхронная функция для сбора данных по каждому объявлению
-async def one_page_parser(coords_and_ids, headers):
+async def parse_one_anncmnt(coords_and_ids, headers):
     url = f'https://www.cian.ru/sale/flat/{str(int(coords_and_ids[0]))}/'
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
@@ -47,22 +45,21 @@ async def one_page_parser(coords_and_ids, headers):
 
                 html_body = await response.read()
 
-                # Просто чтобы видеть, что процесс идет
+                # Just ot see that all is going on
                 print(int(coords_and_ids[0]))
 
                 inner_soup = bs(html_body, 'lxml')
 
-                # Обновляемый список для занесения данных по каждому объвлению на каждой итерации
+                # List to add all information on every iteration
                 data_list = []
 
-                # Айдишник объявления, по которому можно будет его найти
-                ancmnt_id = coords_and_ids[0]
+                anncmnt_id = coords_and_ids[0]
 
                 lat = float(coords_and_ids[1][0])
 
                 long = float(coords_and_ids[1][1])
 
-                # Адрес
+
                 try:
                     address_list = []
                     inner_div = inner_soup.find_all('address', attrs={'class': 'a10a3f92e9--address--140Ec'})
@@ -72,7 +69,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except AttributeError:
                     address_list = None
 
-                # Обновляющаяся переменная для записи станций метро
                 metro_stations_list = []
                 try:
                     inner_div = inner_soup.find_all('a', attrs={'class': 'a10a3f92e9--underground_link--AzxRC'})
@@ -82,7 +78,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except AttributeError:
                     metro_stations_list = None
 
-                # Обновляющаяся переменная для записи времени до станций метро
                 time_to_metro_list = []
                 try:
                     inner_div = inner_soup.find_all('span', attrs={'class': 'a10a3f92e9--underground_time--1fKft'})
@@ -92,7 +87,7 @@ async def one_page_parser(coords_and_ids, headers):
                 except AttributeError:
                     time_to_metro_list = None
 
-                # Цена
+
                 try:
                     prc = None
                     inner_div = inner_soup.find_all('div', attrs={
@@ -102,7 +97,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except AttributeError:
                     prc = None
 
-                # Название объявлния
                 try:
                     ttl = None
                     inner_div = inner_soup.find('div', attrs={'class': 'a10a3f92e9--container--fX4cE'})
@@ -111,7 +105,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except AttributeError:
                     ttl = None
 
-                # Общая площадь
                 try:
                     area = None
                     inner_div = inner_soup.find('div', attrs={'class': 'a10a3f92e9--description--3uuO6'})
@@ -124,7 +117,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except TypeError:
                     area = None
 
-                # Этаж
                 try:
                     flr = None
                     inner_div = inner_soup.find('div', attrs={'class': 'a10a3f92e9--description--3uuO6'})
@@ -137,7 +129,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except TypeError:
                     flr = None
 
-                # Год постройки или сдачи дома
                 try:
                     inner_div = inner_soup.find('div', attrs={'class': 'a10a3f92e9--description--3uuO6'})
                     cn_year = None
@@ -155,7 +146,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except TypeError:
                     cn_year = None
 
-                # Тип жилья
                 try:
                     accdn_type = None
                     inner_div = inner_soup.find('ul', attrs={'class': 'a10a3f92e9--list--2M4V-'})
@@ -168,7 +158,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except TypeError:
                     accdn_type = None
 
-                # Планировка
                 try:
                     layout = None
                     inner_div = inner_soup.find('ul', attrs={'class': 'a10a3f92e9--list--2M4V-'})
@@ -181,7 +170,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except TypeError:
                     layout = None
 
-                # Высота потолков
                 try:
                     height = None
                     inner_div = inner_soup.find('ul', attrs={'class': 'a10a3f92e9--list--2M4V-'})
@@ -194,7 +182,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except TypeError:
                     height = None
 
-                # Балкон / лоджия
                 try:
                     blcn = None
                     inner_div = inner_soup.find('ul', attrs={'class': 'a10a3f92e9--list--2M4V-'})
@@ -207,7 +194,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except TypeError:
                     blcn = None
 
-                # Ремонт
                 try:
                     renovation = None
                     inner_div = inner_soup.find('ul', attrs={'class': 'a10a3f92e9--list--2M4V-'})
@@ -220,7 +206,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except TypeError:
                     renovation = None
 
-                # Ванная
                 try:
                     inner_div = inner_soup.find('ul', attrs={'class': 'a10a3f92e9--list--2M4V-'})
                     bathroom = None
@@ -233,7 +218,6 @@ async def one_page_parser(coords_and_ids, headers):
                 except TypeError:
                     bathroom = None
 
-                # Вид из окна
                 try:
                     view = None
                     inner_div = inner_soup.find('ul', attrs={'class': 'a10a3f92e9--list--2M4V-'})
@@ -246,11 +230,9 @@ async def one_page_parser(coords_and_ids, headers):
                 except TypeError:
                     view = None
 
-                try:  # пробует найти блок с информацией "О доме"
+                try:
                     inner_div = inner_soup.find('div', attrs={'class': 'a10a3f92e9--column--2oGBs'})
-                    # если находит, то пробует вернуть интересующий параметр, либо None
 
-                    # Год постройки
                     cnstr_year = None
                     for item in inner_div:
                         try:
@@ -266,7 +248,6 @@ async def one_page_parser(coords_and_ids, headers):
                         except AttributeError:
                             pass
 
-                    # Тип дома
                     h_type = None
                     for item in inner_div:
                         try:
@@ -275,7 +256,6 @@ async def one_page_parser(coords_and_ids, headers):
                         except AttributeError:
                             pass
 
-                    # Тип перекрытий
                     flr_type = None
                     for item in inner_div:
                         try:
@@ -285,7 +265,6 @@ async def one_page_parser(coords_and_ids, headers):
                         except AttributeError:
                             pass
 
-                    # Подъезды
                     entrncs = None
                     for item in inner_div:
                         try:
@@ -294,7 +273,6 @@ async def one_page_parser(coords_and_ids, headers):
                         except AttributeError:
                             pass
 
-                    # Лифты
                     elvts = None
                     for item in inner_div:
                         try:
@@ -303,7 +281,6 @@ async def one_page_parser(coords_and_ids, headers):
                         except AttributeError:
                             pass
 
-                    # Отопление
                     htng = None
                     for item in inner_div:
                         try:
@@ -312,7 +289,6 @@ async def one_page_parser(coords_and_ids, headers):
                         except AttributeError:
                             pass
 
-                    # Аварийность
                     emgc = None
                     for item in inner_div:
                         try:
@@ -321,7 +297,6 @@ async def one_page_parser(coords_and_ids, headers):
                         except AttributeError:
                             pass
 
-                    # Парковка
                     prkng = None
                     for item in inner_div:
                         try:
@@ -330,7 +305,6 @@ async def one_page_parser(coords_and_ids, headers):
                         except AttributeError:
                             pass
 
-                    # Мусоропровод
                     g_chute = None
                     for item in inner_div:
                         try:
@@ -350,9 +324,8 @@ async def one_page_parser(coords_and_ids, headers):
                     prkng = None
                     g_chute = None
 
-                # после сбора всех данных заносим их в словарь
                 data_list.append({
-                    'AnnouncementID': ancmnt_id,
+                    'AnnouncementID': anncmnt_id,
                     'Title': ttl,
                     'Address': address_list,
                     'Lat': lat,
@@ -381,11 +354,9 @@ async def one_page_parser(coords_and_ids, headers):
                     'GarbageChute': g_chute
                 })
 
-                # записываем данные по объявлению в таблицу
-                file_writer(data_list)
+                write_to_file(data_list)
 
 
-# Функция, вызываю внутри себя выполнение асинхронного парсинга содержимого объявлений
 async def main(coords_and_ids):
     dt_start = datetime.now()
     try:
@@ -400,7 +371,7 @@ async def main(coords_and_ids):
                                'user-agent': user}
                     tasks.append(
                         asyncio.create_task(
-                            one_page_parser(coords_and_ids[item_num], headers)
+                            parse_one_anncmnt(coords_and_ids[item_num], headers)
                         )
                     )
             await asyncio.gather(*tasks)

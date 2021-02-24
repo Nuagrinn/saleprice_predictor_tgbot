@@ -1,5 +1,11 @@
 .idea
 .ipynb_checkpoints
+.venv
 .vscode
 /tg_bot/.env
-someshit
+__pycache__/
+j-note/.ipynb_checkpoints
+map_request_parser/AllPagesParser.py
+map_request_parser/Cian_map_request.py
+map_request_parser/One_async.py
+
