@@ -51,10 +51,22 @@ def make_one_prediction(data):
         column_names = get_feature_names(prod_pipe[0])
         transformed_df = pd.DataFrame(one_apartment_transformed, columns=column_names)
         point_prediction = XGB_best_reg.predict(transformed_df)
-        point_norm_pred = np.floor(np.expm1(point_prediction))
-        point_norm_pred = point_norm_pred[0]
-        deviation = (point_norm_pred * 16) / 100
-        result = f'Рассчитанная цена: {point_norm_pred} с отклонением +- ' \
+        point_norm_pred = np.floor(np.expm1(point_prediction))[0]
+
+        def roundup(x):
+            return x if x % 10000 == 0 else x + 10000 - x % 10000
+
+        def litering_by_three(a):
+            res = [''.join(a[::-1][i:i + 3])[::-1] for i in range(0, len(a), 3)]
+            return ' '.join(res[::-1])
+
+        point_norm_pred = roundup(point_norm_pred)
+
+        point_prediction = litering_by_three(str(int(round(point_norm_pred, 0))))
+
+        deviation = litering_by_three(str(roundup(int(round(((point_norm_pred * 16) / 100), 0)))))
+
+        result = f'Рассчитанная цена: {point_prediction} с отклонением +- ' \
                  f'{deviation}. Учтите, что чем меньше цена (около 10 млн.), тем точнее расчет. ' \
                  f'Если цена кваритры пеерваливает за 20 млн. , то стоит больше учитывать ' \
                  f'отклонение при установке конечной цены.'

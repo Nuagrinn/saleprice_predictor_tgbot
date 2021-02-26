@@ -30,7 +30,7 @@ q5_callback = CallbackData('choice', 'accom_type')
 q5_choice = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text='Вторичка', callback_data=q5_callback.new(
+            InlineKeyboardButton(text='Квартира', callback_data=q5_callback.new(
                 accom_type='flat')),
             InlineKeyboardButton(text='Апартаменты', callback_data=q5_callback.new(
                 accom_type='apartment'))

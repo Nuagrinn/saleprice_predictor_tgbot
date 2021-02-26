@@ -116,8 +116,8 @@ async def answer_q3(call: CallbackQuery, callback_data: dict, state: FSMContext)
 
     async with state.proxy() as data:
         data['walkmetroaccess'] = answer
-    await call.message.answer("Год постройки дома в формате ГГГГ? \n"
-                              "Пример: 1968")
+    await call.message.answer("Год постройки дома в формате ГГГГ? (Можно примерно)\n"
+                              "Пример: 1968 ")
 
     await Test.next()
 
@@ -130,7 +130,7 @@ async def answer_q3(call: CallbackQuery, callback_data: dict, state: FSMContext)
 
     async with state.proxy() as data:
         data['walkmetroaccess'] = answer
-    await call.message.answer("Год постройки дома в формате ГГГГ? \n"
+    await call.message.answer("Год постройки дома в формате ГГГГ? (Можно примерно)\n"
                               "Пример: 1968")
 
     await Test.next()
@@ -254,7 +254,7 @@ async def answer_q7(message: Message, state: FSMContext):
 
     async with state.proxy() as data:
         data['floornum'] = answer
-    await message.answer('И последнее. Сколько всего этажей в доме? \n'
+    await message.answer('И последнее. Сколько всего этажей в доме? (Можно примерно)\n'
                          'Пример: 5')
 
     await Test.next()

@@ -1,5 +1,4 @@
 from PointRectangleClasses import Rectangle, Point
-import fake_useragent
 import aiohttp
 import asyncio
 import csv
