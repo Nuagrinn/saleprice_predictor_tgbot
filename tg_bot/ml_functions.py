@@ -5,7 +5,6 @@ import joblib
 import xgboost as xgb
 from additional_ml_functions import get_azimuth, get_addres_coords, get_feature_names
 
-
 def make_one_prediction(data):
     city_center_coordinates = [55.7522, 37.6156]
     address = f'Москва,{data.get("address")}'
@@ -64,7 +63,7 @@ def make_one_prediction(data):
 
         point_prediction = litering_by_three(str(int(round(point_norm_pred, 0))))
 
-        deviation = litering_by_three(str(roundup(int(round(((point_norm_pred * 16) / 100), 0)))))
+        deviation = litering_by_three(str(roundup(int(round(((point_norm_pred * 11) / 100), 0)))))
 
         result = f'Рассчитанная цена: {point_prediction} с отклонением +- ' \
                  f'{deviation}. Учтите, что чем меньше цена (около 10 млн.), тем точнее расчет. ' \
