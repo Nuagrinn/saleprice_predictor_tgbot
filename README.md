@@ -3,7 +3,7 @@
 ### Results briefly:
 1. XBGBoost-Regressor 
 2. Trained on 44 000 ads from CIAN.ru
-3. RMSE: 23848052 RMSPE: 16.48 R2: 0.92
+3. RMSE: 23848052 MAPE: 0.1109 R2: 0.92
 
 * Contains:
     1. Data parsing
